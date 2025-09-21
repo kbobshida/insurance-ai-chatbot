@@ -143,4 +143,7 @@ uvicorn server:app --reload --port 8000
 本プロジェクトを作成するにあたり、以下の記事を参考にさせていただきました。
 
   - [FastAPI + LangChain + RAGでPDFドキュメントへのQ\&Aボットを作ってみる - Qiita](https://qiita.com/yukinaka_data/items/8270e1a559e8fc3c047d)
+pdfは以下のリンクからダウンロードしてください。
+  - https://www.tokiomarine-nichido.co.jp/service/pdf/total_assist_yakkan_240101.pdf
+  - https://www.tokiomarine-nichido.co.jp/service/pdf/total_assist_pamphlet_240101.pdf
 
