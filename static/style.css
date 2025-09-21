@@ -1,0 +1,123 @@
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+
+/* カラーパレット */
+:root {
+    --user-bg-color: #3b82f6;
+    --ai-bg-color: #f3f4f6;
+    --body-bg-color: #f1f5f9; /* slate-100 */
+    --text-primary-color: #1f2937;
+    --text-on-user-bg: #ffffff;
+    --border-color: #e5e7eb; /* gray-200 */
+}
+
+body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: var(--body-bg-color);
+}
+
+#chat-window { padding: 1.5rem; }
+
+/* スクロールバー */
+#chat-window::-webkit-scrollbar { width: 6px; }
+#chat-window::-webkit-scrollbar-track { background: transparent; }
+#chat-window::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+
+/* メッセージ全体 */
+.chat-message { display: flex; align-items: flex-start; margin-bottom: 1.5rem; max-width: 95%; opacity: 0; transform: translateY(20px); animation: fadeInUp 0.4s ease forwards; }
+.user-message { margin-left: auto; flex-direction: row-reverse; }
+.ai-message { margin-right: auto; }
+
+/* アバター */
+.avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+.ai-message .avatar { background: linear-gradient(135deg, #818cf8, #4f46e5); margin-right: 12px; }
+.user-message .avatar { background: linear-gradient(135deg, #7dd3fc, #0ea5e9); margin-left: 12px; }
+
+/* 吹き出し */
+.message-bubble { padding: 12px 16px; border-radius: 12px; line-height: 1.6; position: relative; }
+.ai-message .message-bubble { background: var(--ai-bg-color); color: var(--text-primary-color); }
+.user-message .message-bubble { background: var(--user-bg-color); color: var(--text-on-user-bg); }
+
+/* 吹き出しのしっぽ */
+.message-bubble::after { content: ''; position: absolute; top: 10px; width: 0; height: 0; border: 8px solid transparent; }
+.ai-message .message-bubble::after { left: -8px; border-right-color: var(--ai-bg-color); }
+.user-message .message-bubble::after { right: -8px; border-left-color: var(--user-bg-color); }
+
+/* AIタイピング表示 */
+.typing-indicator span { height: 8px; width: 8px; background-color: #9ca3af; border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
+.typing-indicator span:nth-of-type(1) { animation-delay: -0.32s; }
+.typing-indicator span:nth-of-type(2) { animation-delay: -0.16s; }
+
+/* アニメーション */
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+
+/* 質問例ボタン */
+#example-questions { transition: opacity 0.3s ease-out; }
+.example-btn { background-color: #f9fafb; border: 1px solid #e5e7eb; color: #374151; padding: 6px 12px; border-radius: 16px; font-size: 0.875rem; cursor: pointer; transition: all 0.2s ease-in-out; }
+.example-btn:hover { background-color: #f3f4f6; border-color: #d1d5db; transform: translateY(-1px); }
+
+/* --- ★★★ ここからが追加/変更部分 ★★★ --- */
+/* 右側パネルのスタイル */
+#source-panel {
+    padding: 1.5rem;
+    overflow-y: auto;
+    transition: background-color 0.3s ease;
+}
+
+.panel-header {
+    font-size: 1.125rem; /* 18px */
+    font-weight: 700;
+    color: var(--text-primary-color);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.panel-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #9ca3af; /* gray-400 */
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+/* 引用元アイテムのスタイル */
+.source-item {
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem; /* 8px */
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.source-item:hover {
+    border-color: #a5b4fc; /* indigo-300 */
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
+
+.source-filename {
+    font-size: 0.875rem;
+    color: var(--text-primary-color);
+    font-weight: 500;
+    /* ファイル名が長い場合に省略する設定 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.source-pagenum {
+    font-size: 0.8rem;
+    color: #6b7280; /* gray-500 */
+    background-color: #f3f4f6; /* gray-100 */
+    padding: 2px 8px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    margin-left: 1rem;
+}

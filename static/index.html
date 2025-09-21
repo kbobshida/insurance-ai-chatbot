@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>保険ドキュメント AIチャット</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-gray-100">
+
+    <div id="body-container" class="flex h-screen max-w-6xl mx-auto">
+
+        <div id="chat-container" class="flex flex-col flex-grow bg-white shadow-xl rounded-lg overflow-hidden m-4">
+            
+            <header class="bg-white p-4 border-b border-gray-200">
+                <h1 class="text-xl font-bold text-center text-gray-800">保険ドキュメント AIチャット</h1>
+                <p class="text-sm text-center text-gray-500">PDFの内容に関する質問にAIが回答します</p>
+            </header>
+
+            <main id="chat-window" class="flex-grow overflow-y-auto">
+                <div class="chat-message ai-message" style="opacity: 1; transform: none;">
+                    <div class="avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"></path><rect x="4" y="12" width="16" height="8" rx="2"></rect><path d="M2 12h20"></path><path d="M12 12V8h4"></path></svg>
+                    </div>
+                    <div class="message-bubble">
+                        こんにちは！ご契約のしおりやパンフレットに関するご質問をどうぞ。
+                    </div>
+                </div>
+
+                <div id="example-questions" class="px-16 py-2">
+                    <p class="text-xs text-gray-400 mb-2 text-center">または、以下の質問例をお試しください。</p>
+                    <div class="flex flex-wrap justify-center gap-2">
+                        <button class="example-btn">ロードアシストでレッカー搬送は何kmまで無料？</button>
+                        <button class="example-btn">レンタカー費用補償は事故と故障で日数が違う？</button>
+                        <button class="example-btn">入院時選べるアシスト特約ではどんなサービスが選べる？</button>
+                        <button class="example-btn">DAP特約を付けたらどんなメリットがある？</button>
+                        <button class="example-btn">もらい事故アシストでは弁護士費用はいくらまで出る？</button>
+                    </div>
+                </div>
+            </main>
+
+            <footer class="bg-white border-t border-gray-200 p-4">
+                <form id="chat-form" class="flex items-center space-x-3">
+                    <input type="text" id="user-input" placeholder="質問を入力してください..." class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+                    <button type="submit" id="send-button" class="px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-400">
+                        送信
+                    </button>
+                </form>
+            </footer>
+        </div>
+
+        <aside id="source-panel" class="w-80 flex-shrink-0 bg-gray-50 border-l border-gray-200 m-4 ml-0 rounded-lg shadow-lg">
+            </aside>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
