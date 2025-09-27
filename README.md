@@ -1,134 +1,88 @@
-# 保険ドキュメント特化型 AIチャットボット
+# 保険ドキュメント特化型 AI チャットボット
 
-[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.103-green.svg)](https://fastapi.tiangolo.com/)
-[![LangChain](https://img.shields.io/badge/LangChain-0.1-orange.svg)](https://www.langchain.com/)
-[![OpenAI](https://img.shields.io/badge/OpenAI-gpt--4o--mini-blue)](https://openai.com/)
+指定した PDF を知識源として参照しながら、保険に関する質問へ正確かつ根拠付きで回答する RAG（Retrieval-Augmented Generation）アプリケーションです。LangChain と OpenAI API を組み合わせ、ドキュメント検索から回答生成までを一貫して自動化しています。
 
-指定したPDFドキュメントの内容に基づいた質疑応答ができる、RAG (Retrieval-Augmented Generation) ベースのAIチャットボットです。
+## 特徴
+- **RAG 構成**: `docs/` 配下の PDF を分割・埋め込みし、FAISS ベクトルストアから関連チャンクを取得して回答を生成します。
+- **HyDE 検索**: ユーザー質問から仮想回答を作り、その文章をクエリとして検索することでリトリーバの精度を高めています。
+- **引用表示**: 回答に利用した文書名とページ番号を UI のサイドパネルに表示し、回答根拠を可視化します。
+- **質問分類ガードレール**: 質問を「保険に関する内容 / 挨拶などのメタ / 無関係トピック」に分類し、対応方針を自動で切り替えます。
+- **LangSmith 対応**: トレース用の環境変数を設定すれば、LLM の推論過程を LangSmith から観測できます。
 
-
-
-## 主な機能
-
-* **RAG (Retrieval-Augmented Generation)**: `docs`フォルダ内のPDF文書を知識源とし、その内容に基づいた回答を生成します。
-
-* **HyDE (Hypothetical Document Embeddings)**: ユーザーの質問から理想的な回答文を一度生成し、それを使って検索を行うことで、検索精度を向上させています。
-
-* **引用元表示**: AIの回答が、どのPDFの何ページ目に基づいているのかをサイドパネルに表示し、情報の信頼性を担保します。
-
-* **質問分類ガードレール**: ユーザーの質問の意図を「保険関連」「挨拶・自己紹介」「無関係な話題」の3つに分類。保険と関係ない質問には回答を拒否し、チャットボットの専門性を維持します。
-
-* **LangSmith連携**: 環境変数を設定するだけで、エージェントの思考プロセスやAPIコールをLangSmith上で詳細に追跡・デバッグできます。
-
-## 技術スタック
-
-* **バックエンド**: Python, FastAPI
-
-* **LLM / AI**: LangChain, OpenAI API (gpt-4o-mini), FAISS (ベクトルストア)
-
-* **フロントエンド**: HTML, CSS, JavaScript
-
-* **開発環境**: Virtualenv, Uvicorn
-
-## フォルダ構成
-
+## システム構成
 ```
-
 .
-├── docs/               \# 知識源となるPDFファイルを格納するディレクトリ
-├── faiss\_index/        \# ingest.pyによって生成されるベクトルストア
-├── static/             \# フロントエンドのファイル (HTML, CSS, JS)
-│   ├── index.html
-│   ├── script.js
-│   └── style.css
-├── .env                \# APIキーなどを保存する環境変数ファイル (各自作成)
-├── ingest.py           \# docs/ 内のPDFを読み込み、ベクトルストアを生成するスクリプト
-├── server.py           \# FastAPIサーバーとチャットボットのメインロジック
-└── README.md           \# このファイル
-
-````
-
-## セットアップとインストール
-
-### 1. リポジトリのクローン
-
-```bash
-git clone [https://github.com/your-username/your-repository-name.git](https://github.com/your-username/your-repository-name.git)
-cd your-repository-name
-````
-
-### 2\. Python仮想環境の作成と有効化
-
-```bash
-# Mac / Linux
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Windows
-python -m venv .venv
-.venv\Scripts\activate
+├── docs/               # 知識源にする PDF を保存
+├── faiss_index/        # ingest.py で生成されるベクトルストア
+├── static/             # フロントエンド (HTML/CSS/JS)
+├── ingest.py           # PDF 取り込みとインデックス作成
+├── server.py           # FastAPI + LangChain による API
+├── requirements.txt    # 依存パッケージ一覧
+└── README.md
 ```
 
-### 3\. 必要なライブラリのインストール
+バックエンドは FastAPI、ベクトルストアには FAISS、LLM には `gpt-4o-mini` を利用しています。フロントエンドは素の HTML/CSS/JavaScript で構成され、引用パネルやサンプル質問など最小限の UI を提供します。
 
-リポジトリには必要な依存関係をまとめた`requirements.txt`を同梱しています。以下のコマンドで一括インストールしてください。
+## セットアップ
+1. **リポジトリの取得**
+   ```bash
+   git clone https://github.com/your-username/insurance-ai-chatbot.git
+   cd insurance-ai-chatbot
+   ```
 
-```bash
-pip install -r requirements.txt
-```
+2. **仮想環境の作成と有効化**
+   ```bash
+   # macOS / Linux
+   python3 -m venv .venv
+   source .venv/bin/activate
 
-### 4\. 環境変数ファイル (.env) の作成
+   # Windows (PowerShell)
+   python -m venv .venv
+   .venv\Scripts\Activate
+   ```
 
-プロジェクトのルートディレクトリに`.env`という名前のファイルを作成し、ご自身のAPIキーなどを記述します。
+3. **依存ライブラリのインストール**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-**.env:**
+4. **環境変数の設定** – ルートディレクトリに `.env` を作成し、以下を記入します。
+   ```env
+   OPENAI_API_KEY="sk-..."
+   # 任意: LangSmith を使う場合のみ
+   LANGCHAIN_TRACING_V2="true"
+   LANGCHAIN_API_KEY="ls__..."
+   LANGCHAIN_PROJECT="保険相談AIチャット"
+   ```
 
-```
-# --- OpenAI API Key ---
-OPENAI_API_KEY="sk-..."
-
-# --- LangSmith (Optional) ---
-LANGCHAIN_TRACING_V2="true"
-LANGCHAIN_API_KEY="ls__..."
-LANGCHAIN_PROJECT="保険相談AIチャット"
-```
-
-### 5\. PDFファイルの準備
-
-`docs`フォルダを作成し、チャットボットに読み込ませたいPDFファイルをその中に入れてください。
+5. **PDF の配置** – `docs/` ディレクトリに回答根拠として使用したい PDF をコピーします。
 
 ## 使い方
+1. **ベクトルストアの生成**
+   ```bash
+   python ingest.py
+   ```
+   実行後に `faiss_index/` が作成されます。PDF を更新した際も同じコマンドで再生成してください。
 
-### 1\. ベクトルストアの作成
+2. **サーバーの起動**
+   ```bash
+   uvicorn server:app --reload --port 8000
+   ```
 
-まず、`docs`フォルダ内のPDFをAIが検索できる形式に変換します。この処理は、PDFを追加・更新した場合にのみ実行が必要です。
+3. **ブラウザからアクセス** – `http://127.0.0.1:8000` を開き、チャット画面で質問します。引用パネルに回答根拠が表示されます。
 
-```bash
-python ingest.py
-```
+## 運用のヒント
+- **HyDE の挙動**: `server.py` の `search_insurance_documents` ツール内で仮想回答を生成し、検索クエリに利用しています。挙動を調整したい場合はプロンプトや取得件数 (`k`) を変更してください。
+- **LangSmith 連携**: `.env` にトレース用キーを設定すると、質問分類チェインや HyDE ツールの呼び出し履歴を LangSmith 上で確認できます。
+- **インデックスの再生成**: PDF を追加・差し替えたあとで `faiss_index/` を削除し、再度 `python ingest.py` を実行することで最新内容に同期できます。
 
-実行すると、`faiss_index`というフォルダが生成されます。
+## トラブルシューティング
+- **`faiss_index` が見つからない**: 先に `python ingest.py` を実行し、インデックスを生成してください。
+- **OpenAI API のエラー**: API キーが `.env` に設定されているか、リクエスト上限に達していないか確認します。
+- **PDF が読み込まれない**: `docs/` 直下に PDF があるか、ファイルのパーミッションに問題がないか確認してください。
 
-### 2\. チャットサーバーの起動
-
-以下のコマンドでWebサーバーを起動します。
-
-```bash
-uvicorn server:app --reload --port 8000
-```
-
-### 3\. ブラウザでアクセス
-
-サーバーが起動したら、Webブラウザで `http://127.0.0.1:8000` にアクセスしてください。チャット画面が表示されます。
-
-## 参考
-
-本プロジェクトを作成するにあたり、以下の記事を参考にさせていただきました。
-
-  - [FastAPI + LangChain + RAGでPDFドキュメントへのQ\&Aボットを作ってみる - Qiita](https://qiita.com/yukinaka_data/items/8270e1a559e8fc3c047d)
-
-pdfは以下のリンクからダウンロードしてください。
-  - https://www.tokiomarine-nichido.co.jp/service/pdf/total_assist_yakkan_240101.pdf
-  - https://www.tokiomarine-nichido.co.jp/service/pdf/total_assist_pamphlet_240101.pdf
-
+## 参考資料
+- [FastAPI 公式ドキュメント](https://fastapi.tiangolo.com/)
+- [LangChain](https://python.langchain.com/)
+- [Tokio Marine: トータルアシスト自動車保険 約款 (PDF)](https://www.tokiomarine-nichido.co.jp/service/pdf/total_assist_yakkan_240101.pdf)
+- [Tokio Marine: トータルアシスト自動車保険 パンフレット (PDF)](https://www.tokiomarine-nichido.co.jp/service/pdf/total_assist_pamphlet_240101.pdf)
