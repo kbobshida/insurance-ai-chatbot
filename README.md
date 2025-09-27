@@ -72,23 +72,7 @@ python -m venv .venv
 
 ### 3\. 必要なライブラリのインストール
 
-`requirements.txt`ファイルを作成し、以下の内容を貼り付けてからインストールを実行してください。
-
-**requirements.txt:**
-
-```
-fastapi
-uvicorn[standard]
-python-dotenv
-langchain
-langchain-openai
-langchain-community
-faiss-cpu
-pypdf
-langsmith
-```
-
-**インストールコマンド:**
+リポジトリには必要な依存関係をまとめた`requirements.txt`を同梱しています。以下のコマンドで一括インストールしてください。
 
 ```bash
 pip install -r requirements.txt
@@ -136,7 +120,7 @@ uvicorn server:app --reload --port 8000
 
 ### 3\. ブラウザでアクセス
 
-サーバーが起動したら、Webブラウザで `http://1.27.0.0.1:8000` にアクセスしてください。チャット画面が表示されます。
+サーバーが起動したら、Webブラウザで `http://127.0.0.1:8000` にアクセスしてください。チャット画面が表示されます。
 
 ## 参考
 

@@ -127,9 +127,13 @@ def search_insurance_documents(query: str) -> dict:
     retrieved_docs = retriever.invoke(hypothetical_document)
 
     # 検索結果と元の質問から最終的な回答を生成
-    qa_prompt = ChatPromptTemplate.from_template("提供されたコンテキスト情報のみに基づいて質問に答えよ。\nコンテキスト:\n{context}\n\n質問: {input}")
+    qa_prompt = ChatPromptTemplate.from_template(
+        "提供されたコンテキスト情報のみに基づいて質問に答えよ。\nコンテキスト:\n{context}\n\n質問: {input}"
+    )
     document_chain = create_stuff_documents_chain(non_streaming_llm, qa_prompt)
-    answer = document_chain.invoke({"input": query, "context": retrieved_docs})
+    answer = document_chain.invoke({"input_documents": retrieved_docs, "input": query})
+    if isinstance(answer, dict):
+        answer = answer.get("output_text", "")
     
     # 検索結果から引用元情報(ファイル名とページ番号)を抽出
     unique_sources = set()
