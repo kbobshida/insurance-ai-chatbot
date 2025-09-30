@@ -74,6 +74,8 @@ pip install -r requirements.txt
 ```env
 # 必須: OpenAI API キー
 OPENAI_API_KEY="sk-..."
+# OpenMP の警告を回避
+KMP_DUPLICATE_LIB_OK=TRUE
 
 # オプション: LangSmith を使う場合のみ
 # LANGCHAIN_TRACING_V2="true"
