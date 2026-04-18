@@ -4,64 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>保険ドキュメント AIチャット</title>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/svg+xml" href="icon-mark.svg">
+
+    <!-- Design system tokens (color / type / spacing / radius / shadow / motion) -->
+    <link rel="stylesheet" href="design-tokens.css">
+    <!-- Application styles built on top of tokens -->
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-100">
+<body>
 
-    <div id="body-container" class="flex h-screen max-w-6xl mx-auto">
+    <div id="app-shell">
+        <div id="chat-card" role="region" aria-label="チャット">
 
-        <div id="chat-container" class="flex flex-col flex-grow bg-white shadow-xl rounded-lg overflow-hidden m-4">
-            
-            <header class="bg-white p-4 border-b border-gray-200">
-                <h1 class="text-xl font-bold text-center text-gray-800">保険ドキュメント AIチャット</h1>
-                <p class="text-sm text-center text-gray-500">PDFの内容に関する質問にAIが回答します</p>
+            <header class="app-header">
+                <div class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 48 48" width="36" height="36">
+                        <path d="M24 4 L42 10 L42 24 C42 34 34 42 24 44 C14 42 6 34 6 24 L6 10 Z" fill="#0b1d33"/>
+                        <path d="M24 4 L42 10 L42 24 C42 34 34 42 24 44 C14 42 6 34 6 24 L6 10 Z" fill="none" stroke="#b88a3a" stroke-width="0.8" opacity="0.6"/>
+                        <text x="24" y="31" text-anchor="middle" font-family="'Noto Serif JP', serif" font-weight="700" font-size="22" fill="#faf8f5">保</text>
+                    </svg>
+                </div>
+                <div class="brand-copy">
+                    <h1>保険ドキュメント AIチャット</h1>
+                    <div class="eyebrow">Policy Assistant · ご契約のしおりに関する質問</div>
+                </div>
             </header>
 
-            <main id="chat-window" class="flex-grow overflow-y-auto">
-                <div class="chat-message ai-message" style="opacity: 1; transform: none;">
-                    <div class="avatar">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"></path><rect x="4" y="12" width="16" height="8" rx="2"></rect><path d="M2 12h20"></path><path d="M12 12V8h4"></path></svg>
-                    </div>
-                    <div class="message-bubble">
-                        こんにちは！ご契約のしおりやパンフレットに関するご質問をどうぞ。
+            <main id="chat-window" aria-live="polite" aria-atomic="false">
+                <div class="chat-message ai-message">
+                    <div class="avatar ai-avatar" aria-hidden="true">AI</div>
+                    <div class="message-bubble ai-bubble">
+                        こんにちは。ご契約のしおりやパンフレットに関するご質問をどうぞ。
                     </div>
                 </div>
 
-                <div id="example-questions" class="px-16 py-2">
-                    <p class="text-xs text-gray-400 mb-2 text-center">または、以下の質問例をお試しください。</p>
-                    <div class="flex flex-wrap justify-center gap-2">
-                        <button class="example-btn">ロードアシストでレッカー搬送は何kmまで無料？</button>
-                        <button class="example-btn">レンタカー費用補償は事故と故障で日数が違う？</button>
-                        <button class="example-btn">入院時選べるアシスト特約ではどんなサービスが選べる？</button>
+                <div id="example-questions">
+                    <div class="eyebrow eyebrow--center">質問例</div>
+                    <div class="example-chips">
+                        <button type="button" class="example-btn">ロードアシストでレッカー搬送は何キロまで無料ですか？</button>
+                        <button type="button" class="example-btn">レンタカー費用補償は事故と故障で日数が違いますか？</button>
+                        <button type="button" class="example-btn">入院時選べるアシスト特約ではどんなサービスが選べますか？</button>
                     </div>
                 </div>
             </main>
 
-            <footer class="bg-white border-t border-gray-200 p-4">
-                <form id="chat-form" class="flex items-center space-x-3">
-                    <input type="text" id="user-input" placeholder="質問を入力してください..." class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
-                    <button type="submit" id="send-button" class="px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition focus:outline-none focus:ring-2 focus:ring-blue-400">
-                        送信
-                    </button>
+            <footer class="composer">
+                <form id="chat-form" autocomplete="off">
+                    <input
+                        type="text"
+                        id="user-input"
+                        class="composer-input"
+                        placeholder="質問を入力してください…"
+                        aria-label="質問入力"
+                    >
+                    <button type="submit" id="send-button" class="composer-send">送信</button>
                 </form>
             </footer>
         </div>
 
-        <aside id="source-panel" class="w-80 flex-shrink-0 bg-gray-50 border-l border-gray-200 m-4 ml-0 rounded-lg shadow-lg">
+        <aside id="source-panel" aria-label="引用元">
+            <div class="eyebrow">Citations</div>
+            <h2 class="panel-title">引用元</h2>
+            <div class="panel-rule" aria-hidden="true"></div>
+            <div id="source-list">
+                <p class="panel-placeholder">回答の根拠となった文書とページ番号が、こちらに表示されます。</p>
+            </div>
         </aside>
     </div>
 
-    <!-- Markdown パーサー -->
+    <!-- Markdown parser -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    
-    <!-- XSS 対策: DOMPurify を追加 -->
+    <!-- XSS sanitizer -->
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
-    
-    <!-- メインスクリプト -->
-    <script src="/static/script.js"></script>
+    <!-- App logic -->
+    <script src="script.js"></script>
 </body>
 </html>

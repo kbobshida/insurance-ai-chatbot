@@ -1,0 +1,141 @@
+/* =============================================================
+   Hoken AI Chat — Design Tokens (Corporate / Trust-forward)
+   Palette: navy + deep green, neutral warm grays, subtle gold
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700&family=IBM+Plex+Mono:wght@400&display=swap');
+
+:root {
+  /* -- Brand: Navy (primary) -- */
+  --navy-900: #0b1d33;  /* deep ink, headers on light */
+  --navy-800: #102a4c;  /* primary surface on dark cards */
+  --navy-700: #16375f;  /* body on dark */
+  --navy-600: #1f4b7a;  /* accent fills */
+  --navy-500: #2e6aa6;  /* interactive */
+  --navy-300: #8aa9c9;  /* muted */
+
+  /* -- Brand: Deep Green (secondary, trust / confirmation) -- */
+  --green-800: #0f3d2e;
+  --green-700: #19573f;
+  --green-600: #1f6d4e;
+  --green-500: #2b8765;
+  --green-200: #c5dccf;
+
+  /* -- Accent: Gold (rare, for emphasis / citations) -- */
+  --gold-600: #9a7026;
+  --gold-500: #b88a3a;
+  --gold-200: #ead8b2;
+
+  /* -- Neutrals: warm stone -- */
+  --stone-50:  #faf8f5;  /* page background */
+  --stone-100: #f3efe9;  /* surface-2 */
+  --stone-200: #e6dfd5;  /* borders */
+  --stone-300: #cec3b3;
+  --stone-500: #847a6b;
+  --stone-700: #4a4337;
+  --stone-900: #211d17;
+
+  --white: #ffffff;
+
+  /* -- Semantic -- */
+  --bg-page:       var(--stone-50);
+  --bg-card:       var(--white);
+  --bg-surface-2:  var(--stone-100);
+  --fg-primary:    var(--navy-900);
+  --fg-secondary:  var(--stone-700);
+  --fg-tertiary:   var(--stone-500);
+  --border:        var(--stone-200);
+  --border-strong: var(--stone-300);
+
+  --accent:        var(--navy-700);
+  --accent-hover:  var(--navy-800);
+  --confirm:       var(--green-700);
+  --focus-ring:    rgba(46, 106, 166, 0.35);
+
+  /* -- Typography -- */
+  --font-sans:  'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic', Meiryo, sans-serif;
+  --font-serif: 'Noto Serif JP', 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  --font-mono:  'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-bold:    700;
+
+  --lh-tight: 1.25;
+  --lh-body:  1.7;
+
+  --fs-meta: 12px;
+  --fs-sm:   14px;
+  --fs-base: 16px;
+  --fs-lg:   18px;
+  --fs-xl:   22px;
+  --fs-2xl:  28px;
+  --fs-3xl:  36px;
+
+  /* -- Spacing (4px grid) -- */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* -- Radius -- */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-full: 9999px;
+
+  /* -- Shadow -- */
+  --shadow-1: 0 1px 2px rgba(11, 29, 51, 0.05),
+              0 1px 3px rgba(11, 29, 51, 0.04);
+  --shadow-2: 0 2px 4px rgba(11, 29, 51, 0.06),
+              0 4px 12px rgba(11, 29, 51, 0.05);
+  --shadow-3: 0 8px 24px rgba(11, 29, 51, 0.10),
+              0 2px 6px rgba(11, 29, 51, 0.05);
+
+  /* -- Motion -- */
+  --dur-fast: 150ms;
+  --dur-med:  240ms;
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === Base === */
+html, body {
+  font-family: var(--font-sans);
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-base);
+  line-height: var(--lh-body);
+  color: var(--fg-primary);
+  background: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: "palt" 1;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-serif);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  color: var(--navy-900);
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+h1 { font-size: var(--fs-3xl); }
+h2 { font-size: var(--fs-2xl); }
+h3 { font-size: var(--fs-xl); }
+h4 { font-size: var(--fs-lg); }
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--fs-meta);
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-tertiary);
+}

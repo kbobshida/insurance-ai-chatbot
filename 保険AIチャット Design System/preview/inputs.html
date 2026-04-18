@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>body{margin:0;padding:22px;background:#faf8f5;font-family:'Noto Sans JP',sans-serif;}
+input{font-family:inherit;font-size:15px;padding:12px 14px;border:1px solid #cec3b3;border-radius:6px;width:100%;box-sizing:border-box;outline:none;background:#fff;color:#211d17;transition:box-shadow .15s,border-color .15s;}
+input::placeholder{color:#847a6b;}
+input:focus{box-shadow:0 0 0 3px rgba(46,106,166,.35);border-color:#16375f;}
+.lbl{font-size:10px;color:#847a6b;font-family:'Noto Sans JP',sans-serif;margin:0 0 6px;letter-spacing:.12em;text-transform:uppercase;font-weight:500;}
+.stack{display:flex;flex-direction:column;gap:14px;}
+</style></head><body>
+<div class="stack">
+  <div><div class="lbl">Default</div><input type="text" placeholder="質問を入力してください…"></div>
+  <div><div class="lbl">Filled</div><input type="text" value="ロードアシストの無料距離は？"></div>
+  <div><div class="lbl">Focus · navy ring</div><input type="text" value="質問" style="box-shadow:0 0 0 3px rgba(46,106,166,.35);border-color:#16375f;"></div>
+</div>
+</body></html>

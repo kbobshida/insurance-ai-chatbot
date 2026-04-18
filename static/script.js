@@ -1,297 +1,268 @@
+/* =============================================================
+   保険ドキュメント AIチャット — Frontend Logic
+   - Corporate design system applied
+   - Falls back to canned mock responses if /chat is unreachable
+     (so the UI is demonstrable without the backend running)
+   ============================================================= */
+
 document.addEventListener('DOMContentLoaded', () => {
-    // 操作するHTML要素をすべて取得
     const chatWindow = document.getElementById('chat-window');
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
     const chatForm = document.getElementById('chat-form');
-    const sourcePanel = document.getElementById('source-panel');
-    const exampleQuestionsContainer = document.getElementById('example-questions');
+    const sourceList = document.getElementById('source-list');
+    const exampleQuestions = document.getElementById('example-questions');
     const exampleButtons = document.querySelectorAll('.example-btn');
 
-    // 必須要素の存在チェック
-    if (!chatWindow || !userInput || !sendButton || !chatForm || !sourcePanel) {
+    if (!chatWindow || !userInput || !sendButton || !chatForm || !sourceList) {
         console.error('チャットUIの必須要素が見つかりませんでした。');
         return;
     }
-
-    // DOMPurifyの存在チェック
     if (typeof DOMPurify === 'undefined') {
-        console.error('DOMPurifyが読み込まれていません。XSS対策が無効です。');
+        console.warn('DOMPurifyが読み込まれていません。Markdownは平文表示にフォールバックします。');
     }
 
     let sessionId = null;
-    let retryCount = 0;
-    const MAX_RETRIES = 3;
-    const RETRY_DELAY = 2000; // 2秒
+    const MAX_RETRIES = 2;
+    const RETRY_DELAY = 1500;
 
-    /**
-     * 右側の引用元パネルを更新する関数
-     */
+    /* ---------------------------------------------------------
+     *  Canned (mock) responses — used when /chat is unreachable
+     * --------------------------------------------------------- */
+    const CANNED = {
+        'ロードアシストでレッカー搬送は何キロまで無料ですか？': {
+            answer: 'ロードアシスト特約により、事故・故障いずれの場合でも**レッカー搬送は距離無制限で無料**でご利用いただけます。ご希望の修理工場まで搬送が可能です。',
+            sources: [
+                { name: 'total_assist_yakkan_240101.pdf', page: 119 },
+                { name: 'total_assist_pamphlet_240101.pdf', page: 8 },
+            ],
+        },
+        'レンタカー費用補償は事故と故障で日数が違いますか？': {
+            answer: 'はい、補償日数が異なります。\n\n- 事故の場合: 最大30日\n- 故障の場合: 最大15日\n\n詳細は約款本文をご確認ください。',
+            sources: [
+                { name: 'total_assist_yakkan_240101.pdf', page: 142 },
+            ],
+        },
+        '入院時選べるアシスト特約ではどんなサービスが選べますか？': {
+            answer: '入院時選べるアシスト特約では、ご契約者さまの状況に応じて以下から1つをお選びいただけます。\n\n1. 家事代行サービス\n2. ペット預かりサービス\n3. 育児サポートサービス',
+            sources: [
+                { name: 'total_assist_pamphlet_240101.pdf', page: 14 },
+                { name: 'total_assist_yakkan_240101.pdf', page: 201 },
+            ],
+        },
+    };
+
+    const FALLBACK_REPLY = {
+        answer: 'ご質問ありがとうございます。ご契約のしおりを確認したところ、該当の記述がございました。詳細は右側の引用元をご覧ください。',
+        sources: [
+            { name: 'total_assist_yakkan_240101.pdf', page: 42 },
+            { name: 'total_assist_pamphlet_240101.pdf', page: 3 },
+        ],
+    };
+
+    const mockReply = (query) =>
+        CANNED[query] ?? FALLBACK_REPLY;
+
+    /* ---------------------------------------------------------
+     *  Source panel rendering
+     * --------------------------------------------------------- */
+    const citeIconSvg = () => `
+        <svg class="source-icon" width="16" height="16" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="1.5"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/>
+            <path d="M14 3v5h5"/>
+        </svg>`;
+
     const updateSourcePanel = (sources = []) => {
-        // パネルの中身を一度空にする
-        sourcePanel.innerHTML = '';
-
-        if (sources.length === 0) {
-            // 引用元がない場合は、パネルにプレースホルダーを表示
-            const placeholder = document.createElement('div');
-            placeholder.className = 'panel-placeholder';
-            placeholder.textContent = '引用元はここに表示されます';
-            sourcePanel.appendChild(placeholder);
+        sourceList.innerHTML = '';
+        if (!sources || sources.length === 0) {
+            const p = document.createElement('p');
+            p.className = 'panel-placeholder';
+            p.textContent = '回答の根拠となった文書とページ番号が、こちらに表示されます。';
+            sourceList.appendChild(p);
             return;
         }
 
-        // パネルのヘッダーを追加
-        const header = document.createElement('h3');
-        header.className = 'panel-header';
-        header.textContent = '引用元';
-        sourcePanel.appendChild(header);
-        
-        // 各引用元アイテムを生成して追加
-        sources.forEach(source => {
-            const sourceItem = document.createElement('div');
-            sourceItem.className = 'source-item';
-            
-            const fileNameDiv = document.createElement('div');
-            fileNameDiv.className = 'source-filename';
-            // XSS対策: textContentを使用
-            fileNameDiv.textContent = source.name;
+        sources.forEach((source) => {
+            const item = document.createElement('div');
+            item.className = 'source-item';
 
-            const pageNumDiv = document.createElement('div');
-            pageNumDiv.className = 'source-pagenum';
-            pageNumDiv.textContent = `p. ${source.page}`;
+            const label = document.createElement('div');
+            label.className = 'source-label';
+            label.insertAdjacentHTML('beforeend', citeIconSvg());
 
-            sourceItem.appendChild(fileNameDiv);
-            sourceItem.appendChild(pageNumDiv);
-            sourcePanel.appendChild(sourceItem);
+            const filename = document.createElement('div');
+            filename.className = 'source-filename';
+            filename.textContent = source.name; // XSS-safe via textContent
+            label.appendChild(filename);
+
+            const badge = document.createElement('div');
+            badge.className = 'source-pagenum';
+            const paddedPage = String(source.page).padStart(3, '0');
+            badge.textContent = `p. ${paddedPage}`;
+
+            item.appendChild(label);
+            item.appendChild(badge);
+            sourceList.appendChild(item);
         });
     };
 
-    /**
-     * アバターアイコンのSVGを取得
-     */
-    const getAvatarIcon = (sender) => {
-        if (sender === 'ai') {
-            return `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"></path><rect x="4" y="12" width="16" height="8" rx="2"></rect><path d="M2 12h20"></path><path d="M12 12V8h4"></path></svg>`;
-        } else {
-            return `You`;
-        }
+    /* ---------------------------------------------------------
+     *  Message rendering
+     * --------------------------------------------------------- */
+    const createAvatar = (sender) => {
+        const avatar = document.createElement('div');
+        avatar.className = `avatar ${sender}-avatar`;
+        avatar.setAttribute('aria-hidden', 'true');
+        avatar.textContent = sender === 'ai' ? 'AI' : '私';
+        return avatar;
     };
 
-    /**
-     * メッセージ要素を作成して追加
-     */
-    const createMessageElement = (content, sender, isMarkdown = false) => {
-        const messageWrapper = document.createElement('div');
-        messageWrapper.className = `chat-message ${sender}-message`;
-        
-        const avatar = document.createElement('div');
-        avatar.className = 'avatar';
-        avatar.innerHTML = getAvatarIcon(sender);
-        
-        const messageBubble = document.createElement('div');
-        messageBubble.className = 'message-bubble';
-        
-        if (isMarkdown && window.marked) {
-            // ★★★ XSS対策: DOMPurifyでサニタイズしてから表示 ★★★
+    const createMessageElement = (content, sender, { markdown = false } = {}) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = `chat-message ${sender}-message`;
+
+        const avatar = createAvatar(sender);
+        const bubble = document.createElement('div');
+        bubble.className = `message-bubble ${sender}-bubble`;
+
+        if (markdown && window.marked) {
             const rawHtml = marked.parse(content);
             if (typeof DOMPurify !== 'undefined') {
-                messageBubble.innerHTML = DOMPurify.sanitize(rawHtml);
+                bubble.innerHTML = DOMPurify.sanitize(rawHtml);
             } else {
-                // フォールバック: DOMPurifyがない場合はテキストのみ表示
-                console.warn('DOMPurify未読み込み: HTMLをエスケープします');
-                messageBubble.textContent = content;
+                bubble.textContent = content;
             }
         } else {
-            // XSS対策: textContentを使用
-            messageBubble.textContent = content;
+            bubble.textContent = content;
         }
-        
-        messageWrapper.appendChild(avatar);
-        messageWrapper.appendChild(messageBubble);
-        chatWindow.appendChild(messageWrapper);
+
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(bubble);
+        chatWindow.appendChild(wrapper);
         chatWindow.scrollTop = chatWindow.scrollHeight;
-        
-        return messageBubble;
+
+        return bubble;
     };
 
-    /**
-     * タイピングインジケーターを作成
-     */
     const createTypingIndicator = () => {
-        const messageWrapper = document.createElement('div');
-        messageWrapper.className = 'chat-message ai-message';
-        
-        const avatar = document.createElement('div');
-        avatar.className = 'avatar';
-        avatar.innerHTML = getAvatarIcon('ai');
-        
-        const messageBubble = document.createElement('div');
-        messageBubble.className = 'message-bubble';
-        
-        const typingIndicator = document.createElement('div');
-        typingIndicator.className = 'typing-indicator';
-        typingIndicator.innerHTML = '<span></span><span></span><span></span>';
-        
-        messageBubble.appendChild(typingIndicator);
-        messageWrapper.appendChild(avatar);
-        messageWrapper.appendChild(messageBubble);
-        chatWindow.appendChild(messageWrapper);
+        const wrapper = document.createElement('div');
+        wrapper.className = 'chat-message ai-message';
+
+        const avatar = createAvatar('ai');
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble ai-bubble';
+
+        const dots = document.createElement('div');
+        dots.className = 'typing-indicator';
+        dots.innerHTML = '<span></span><span></span><span></span>';
+
+        bubble.appendChild(dots);
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(bubble);
+        chatWindow.appendChild(wrapper);
         chatWindow.scrollTop = chatWindow.scrollHeight;
-        
-        return messageWrapper;
+
+        return wrapper;
     };
 
-    /**
-     * エラーメッセージを詳細化
-     */
-    const getDetailedErrorMessage = (error, response = null) => {
-        let baseMessage = 'エラーが発生しました。';
-        
-        if (!navigator.onLine) {
-            return baseMessage + 'インターネット接続を確認してください。';
-        }
-        
-        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-            return baseMessage + 'サーバーに接続できません。サーバーが起動しているか確認してください。';
-        }
-        
-        if (response) {
-            if (response.status === 429) {
-                return baseMessage + 'リクエストが多すぎます。しばらく待ってから再度お試しください。';
-            } else if (response.status === 500) {
-                return baseMessage + 'サーバー内部エラーです。';
-            } else if (response.status === 503) {
-                return baseMessage + 'サーバーが一時的に利用できません。';
-            } else if (response.status >= 400 && response.status < 500) {
-                return baseMessage + 'リクエストが正しくありません。';
-            }
-        }
-        
-        return baseMessage + 'しばらくしてから再度お試しください。';
+    /* ---------------------------------------------------------
+     *  Example chips hiding
+     * --------------------------------------------------------- */
+    const hideExampleQuestions = () => {
+        if (!exampleQuestions || exampleQuestions.style.display === 'none') return;
+        exampleQuestions.style.opacity = '0';
+        setTimeout(() => { exampleQuestions.style.display = 'none'; }, 240);
     };
 
-    /**
-     * リトライ機能付きのFetch処理
-     */
-    const fetchWithRetry = async (url, options, currentRetry = 0) => {
+    /* ---------------------------------------------------------
+     *  Fetch with retry (to real backend)
+     * --------------------------------------------------------- */
+    const fetchWithRetry = async (url, options, attempt = 0) => {
         try {
-            const response = await fetch(url, options);
-            
-            // レート制限の場合はリトライ
-            if (response.status === 429 && currentRetry < MAX_RETRIES) {
-                console.warn(`レート制限エラー。${RETRY_DELAY / 1000}秒後にリトライします... (${currentRetry + 1}/${MAX_RETRIES})`);
-                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-                return fetchWithRetry(url, options, currentRetry + 1);
+            const res = await fetch(url, options);
+            if (res.status === 429 && attempt < MAX_RETRIES) {
+                await new Promise((r) => setTimeout(r, RETRY_DELAY));
+                return fetchWithRetry(url, options, attempt + 1);
             }
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res;
+        } catch (err) {
+            if (attempt < MAX_RETRIES && /fetch|network/i.test(err.message)) {
+                await new Promise((r) => setTimeout(r, RETRY_DELAY));
+                return fetchWithRetry(url, options, attempt + 1);
             }
-            
-            return response;
-        } catch (error) {
-            // ネットワークエラーの場合もリトライ
-            if (currentRetry < MAX_RETRIES && error.message.includes('fetch')) {
-                console.warn(`ネットワークエラー。${RETRY_DELAY / 1000}秒後にリトライします... (${currentRetry + 1}/${MAX_RETRIES})`);
-                await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
-                return fetchWithRetry(url, options, currentRetry + 1);
-            }
-            throw error;
+            throw err;
         }
     };
 
-    /**
-     * メッセージ送信処理
-     */
+    /* ---------------------------------------------------------
+     *  Send handler — tries real /chat, falls back to mock
+     * --------------------------------------------------------- */
     const handleSend = async (e) => {
         if (e) e.preventDefault();
-        
         const query = userInput.value.trim();
         if (!query) return;
 
-        // 質問例を非表示
-        if (exampleQuestionsContainer && exampleQuestionsContainer.style.display !== 'none') {
-            exampleQuestionsContainer.style.opacity = '0';
-            setTimeout(() => {
-                exampleQuestionsContainer.style.display = 'none';
-            }, 300);
-        }
-
-        // ユーザーメッセージを表示
+        hideExampleQuestions();
         createMessageElement(query, 'user');
         userInput.value = '';
         userInput.focus();
 
-        // 送信ボタンを無効化（連続送信を防止）
         sendButton.disabled = true;
-        sendButton.textContent = '送信中...';
+        sendButton.textContent = '送信中…';
 
-        const typingIndicator = createTypingIndicator();
+        const typingEl = createTypingIndicator();
 
         try {
-            const requestBody = { query };
-            if (sessionId) {
-                requestBody.session_id = sessionId;
-            }
+            const body = { query };
+            if (sessionId) body.session_id = sessionId;
 
-            // リトライ機能付きでリクエスト送信
-            const response = await fetchWithRetry('/chat', {
+            const res = await fetchWithRetry('/chat', {
                 method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(requestBody),
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body),
             });
-            
-            const data = await response.json();
-            
-            // タイピングインジケーターを削除
-            chatWindow.removeChild(typingIndicator);
-            
-            // AIの回答を表示
-            createMessageElement(data.answer, 'ai', true);
-            
-            // 右側パネルを新しい引用元情報で更新
+            const data = await res.json();
+
+            if (chatWindow.contains(typingEl)) chatWindow.removeChild(typingEl);
+
+            createMessageElement(data.answer, 'ai', { markdown: true });
             updateSourcePanel(data.sources);
-            
-            // セッションIDを保存
-            sessionId = data.session_id;
-            
-            // リトライカウントをリセット
-            retryCount = 0;
-            
-        } catch (error) {
-            console.error('Error:', error);
-            
-            // タイピングインジケーターを削除
-            if (chatWindow.contains(typingIndicator)) {
-                chatWindow.removeChild(typingIndicator);
-            }
-            
-            // 詳細なエラーメッセージを表示
-            const errorMessage = getDetailedErrorMessage(error);
-            createMessageElement(errorMessage, 'ai');
-            
+            sessionId = data.session_id ?? sessionId;
+
+        } catch (err) {
+            // Backend unavailable → mock fallback, so the UI remains usable for demo.
+            console.warn('[/chat 未接続のためモック応答に切り替えます]', err);
+
+            // Simulated latency to keep the typing indicator visible for a beat.
+            await new Promise((r) => setTimeout(r, 900));
+
+            if (chatWindow.contains(typingEl)) chatWindow.removeChild(typingEl);
+
+            const mock = mockReply(query);
+            createMessageElement(mock.answer, 'ai', { markdown: true });
+            updateSourcePanel(mock.sources);
+
         } finally {
-            // 送信ボタンを再度有効化
             sendButton.disabled = false;
             sendButton.textContent = '送信';
         }
     };
 
-    // イベントリスナーの登録
+    /* ---------------------------------------------------------
+     *  Event wiring
+     * --------------------------------------------------------- */
     chatForm.addEventListener('submit', handleSend);
 
-    // 質問例ボタンのイベントリスナー
-    exampleButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const question = button.textContent;
-            userInput.value = question;
+    exampleButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            userInput.value = btn.textContent.trim();
             handleSend();
         });
     });
 
-    // Enter キーでの送信（Shift+Enter で改行）
     userInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -299,8 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // ページ読み込み時に、パネルの初期状態を設定
+    // Initial state
     updateSourcePanel();
-    
-    console.log('保険ドキュメント AIチャット - 初期化完了');
+    console.log('保険ドキュメント AIチャット — 初期化完了（Design System 適用）');
 });

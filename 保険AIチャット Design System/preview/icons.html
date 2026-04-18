@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>body{margin:0;padding:22px;background:#faf8f5;font-family:'Noto Sans JP',sans-serif;}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;}
+.cell{display:flex;flex-direction:column;align-items:center;gap:8px;color:#16375f;}
+.cell svg{width:24px;height:24px;}
+.lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;color:#847a6b;text-align:center;}
+.note{margin-top:16px;padding:10px 12px;background:#f3efe9;border:1px solid #e6dfd5;border-radius:6px;font-size:11px;color:#4a4337;line-height:1.6;}
+</style></head><body>
+<div class="grid">
+  <div class="cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg><div class="lbl">cite</div></div>
+  <div class="cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><div class="lbl">send</div></div>
+  <div class="cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><div class="lbl">search</div></div>
+  <div class="cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A5.2 5.2 0 0 1 12 5a5.2 5.2 0 0 1 8 5.2c0 7.3-8 11.8-8 11.8z"/></svg><div class="lbl">bookmark</div></div>
+  <div class="cell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><div class="lbl">info</div></div>
+</div>
+<div class="note">House rule: Lucide outline · <b>stroke-width 1.5</b> · round caps/joins · currentColor · 24px default. Thinner than the 2.5 the old system used — refined to match the serif display type.</div>
+</body></html>

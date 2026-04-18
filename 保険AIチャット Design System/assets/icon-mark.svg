@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <path d="M24 4 L42 10 L42 24 C42 34 34 42 24 44 C14 42 6 34 6 24 L6 10 Z" fill="#0b1d33"></path>
+  <path d="M24 4 L42 10 L42 24 C42 34 34 42 24 44 C14 42 6 34 6 24 L6 10 Z" fill="none" stroke="#b88a3a" stroke-width="0.8" opacity="0.6"></path>
+  <text x="24" y="30" text-anchor="middle" font-family="&#39;Noto Serif JP&#39;, serif" font-weight="700" font-size="20" fill="#faf8f5">保</text>
+</svg>

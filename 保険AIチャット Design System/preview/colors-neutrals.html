@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>body{margin:0;padding:20px;background:#faf8f5;}
+.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;}
+.sw{border-radius:6px;height:90px;display:flex;flex-direction:column;justify-content:flex-end;padding:10px;box-sizing:border-box;border:1px solid #e6dfd5;}
+.sw .n{font-size:11px;font-weight:500;font-family:'Noto Sans JP',sans-serif;}
+.sw .h{font-size:10px;font-family:'IBM Plex Mono',monospace;opacity:.75;margin-top:2px;}
+.dark .n,.dark .h{color:#faf8f5;}
+.dark .h{opacity:.7;}
+</style></head><body>
+<div class="grid">
+  <div class="sw" style="background:#faf8f5"><div class="n">Page</div><div class="h">#FAF8F5</div></div>
+  <div class="sw" style="background:#f3efe9"><div class="n">Surface</div><div class="h">#F3EFE9</div></div>
+  <div class="sw" style="background:#e6dfd5"><div class="n">Border</div><div class="h">#E6DFD5</div></div>
+  <div class="sw" style="background:#cec3b3"><div class="n">Border strong</div><div class="h">#CEC3B3</div></div>
+  <div class="sw dark" style="background:#847a6b"><div class="n">Muted</div><div class="h">#847A6B</div></div>
+  <div class="sw dark" style="background:#4a4337"><div class="n">Stone 700</div><div class="h">#4A4337</div></div>
+  <div class="sw dark" style="background:#211d17"><div class="n">Stone 900</div><div class="h">#211D17</div></div>
+  <div class="sw" style="background:#ffffff"><div class="n">White</div><div class="h">#FFFFFF</div></div>
+  <div class="sw" style="background:#f3efe9;border-color:#16375f;border-width:2px"><div class="n">Card · bordered</div><div class="h">navy rule</div></div>
+  <div class="sw" style="background:#faf8f5;box-shadow:0 2px 4px rgba(11,29,51,.06),0 4px 12px rgba(11,29,51,.05)"><div class="n">Elevated</div><div class="h">shadow-2</div></div>
+</div>
+</body></html>

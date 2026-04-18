@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><link rel="stylesheet" href="../colors_and_type.css">
+<style>body{margin:0;padding:22px;background:#faf8f5;font-family:'Noto Sans JP',sans-serif;}
+.row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:16px;}
+button{font-family:inherit;font-size:15px;cursor:pointer;border:0;}
+.primary{background:#16375f;color:#fff;padding:11px 24px;border-radius:6px;font-weight:500;letter-spacing:.05em;transition:background .15s;}
+.primary:hover{background:#102a4c;}
+.primary-d{background:#cec3b3;color:#faf8f5;padding:11px 24px;border-radius:6px;font-weight:500;letter-spacing:.05em;cursor:not-allowed;}
+.ghost{background:transparent;color:#16375f;padding:11px 20px;border-radius:6px;font-weight:500;border:1px solid #16375f;}
+.ghost:hover{background:#f3efe9;}
+.chip{background:#fff;border:1px solid #cec3b3;color:#211d17;padding:8px 14px;border-radius:4px;font-size:14px;font-family:'Noto Sans JP',sans-serif;}
+.chip:hover{border-color:#16375f;color:#16375f;}
+.lbl{font-family:'Noto Sans JP',sans-serif;font-size:10px;color:#847a6b;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;font-weight:500;}
+</style></head><body>
+<div class="lbl">Primary · hover · disabled</div>
+<div class="row">
+  <button class="primary">送信</button>
+  <button class="primary" style="background:#102a4c">送信</button>
+  <button class="primary-d">送信中…</button>
+</div>
+<div class="lbl">Secondary · ghost</div>
+<div class="row">
+  <button class="ghost">キャンセル</button>
+</div>
+<div class="lbl">Chips · starter questions</div>
+<div class="row">
+  <button class="chip">ロードアシストの無料距離は？</button>
+  <button class="chip">レンタカー補償の日数</button>
+</div>
+</body></html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>保険ドキュメント AIチャット — UI Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700&family=IBM+Plex+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../colors_and_type.css">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    background: #faf8f5;
+    font-family: 'Noto Sans JP', sans-serif;
+    color: #211d17;
+  }
+
+  /* Scrollbar */
+  main::-webkit-scrollbar, aside::-webkit-scrollbar { width: 6px; }
+  main::-webkit-scrollbar-track, aside::-webkit-scrollbar-track { background: transparent; }
+  main::-webkit-scrollbar-thumb, aside::-webkit-scrollbar-thumb {
+    background: #cec3b3; border-radius: 0;
+  }
+
+  /* Example chips */
+  .example-btn {
+    background: #fff; border: 1px solid #cec3b3; color: #211d17;
+    padding: 9px 14px; border-radius: 4px; font-size: 14px;
+    cursor: pointer; transition: border-color .15s, color .15s;
+    font-family: inherit; line-height: 1.4;
+  }
+  .example-btn:hover { border-color: #16375f; color: #16375f; }
+
+  /* Composer */
+  .composer-input {
+    flex-grow: 1; padding: 11px 14px;
+    border: 1px solid #cec3b3; border-radius: 6px;
+    font-family: inherit; font-size: 15px; color: #211d17;
+    background: #fff; outline: none;
+    transition: box-shadow .15s, border-color .15s;
+  }
+  .composer-input::placeholder { color: #847a6b; }
+  .composer-input:focus {
+    border-color: #16375f;
+    box-shadow: 0 0 0 3px rgba(46, 106, 166, 0.35);
+  }
+  .composer-input:disabled { background: #faf8f5; color: #847a6b; }
+
+  .composer-send {
+    padding: 11px 26px; background: #16375f; color: #faf8f5;
+    font-weight: 500; border: 0; border-radius: 6px;
+    cursor: pointer; font-family: inherit; font-size: 15px;
+    letter-spacing: 0.05em;
+    transition: background-color .15s;
+  }
+  .composer-send:hover:not(:disabled) { background: #102a4c; }
+  .composer-send:focus { outline: none; box-shadow: 0 0 0 3px rgba(46, 106, 166, 0.35); }
+  .composer-send:disabled { background: #cec3b3; color: #faf8f5; cursor: not-allowed; }
+
+  /* Source items */
+  .source-item {
+    background: #fff; border: 1px solid #e6dfd5; border-radius: 6px;
+    padding: 11px 12px; margin-bottom: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .source-item:hover {
+    border-color: #cec3b3;
+    box-shadow: 0 1px 2px rgba(11,29,51,.05), 0 1px 3px rgba(11,29,51,.04);
+  }
+
+  @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+  @keyframes typePulse {
+    0%, 60%, 100% { opacity: 0.25; }
+    30% { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="Header.jsx"></script>
+<script type="text/babel" src="Avatar.jsx"></script>
+<script type="text/babel" src="MessageBubble.jsx"></script>
+<script type="text/babel" src="TypingIndicator.jsx"></script>
+<script type="text/babel" src="ExampleChips.jsx"></script>
+<script type="text/babel" src="Composer.jsx"></script>
+<script type="text/babel" src="SourcePanel.jsx"></script>
+<script type="text/babel" src="ChatApp.jsx"></script>
+<script type="text/babel">
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<ChatApp />);
+</script>
+</body>
+</html>
